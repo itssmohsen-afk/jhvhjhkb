@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSVP Form</title>
+    <link rel="stylesheet" href="form.css">
+</head>
+<body>
+
+    <div class="form-container">
+
+        <div class="form-image">
+            <img src="WhatsApp Image 2026-10-30 at 17.04.41.jpeg">
+        </div>
+
+        <div class="header">
+            <h1>RSVP to our Wedding</h1>
+            <p>Thursday November 19, 2026 at 7:00 PM</p>
+            <p>Event Address: InterContinental Cairo Semiramis</p>
+        </div>
+
+        <form id="rsvpform">
+
+            <div class="question">
+                <label>Will you be attending? / هل ستحضر؟</label>
+
+                <div class="option">
+                    <input type="radio" name="attendance" value="Yes" required>
+                    <span>Yes, I'll be there / نعم سأحضر</span>
+                </div>
+
+                <div class="option">
+                    <input type="radio" name="attendance" value="No">
+                    <span>Sorry, can't make it / للأسف أعتذر</span>
+                </div>
+            </div>
+
+            <div class="question">
+                <label>First and Last Name / الاسم الأول والأخير</label>
+                <input type="text" id="name" name="name"
+                       placeholder="Your answer" required>
+            </div>
+
+            <button type="submit" id="submitBtn">Submit</button>
+
+            <p id="message"></p>
+
+        </form>
+    </div>
+
+    <script>
+
+        const scriptURL = "https://script.google.com/macros/s/AKfycbxknSsr3m-3e_avKgNtQOt1kthXmlDR3mmtXZaRltDa2kCBzLkMVUPRAhxRfKiZI3vjDQ/exec";
+
+        const form = document.getElementById("rsvpform");
+        const message = document.getElementById("message");
+        const submitBtn = document.getElementById("submitBtn");
+
+        form.addEventListener("submit", function(e) {
+
+            e.preventDefault();
+
+            const data = new URLSearchParams();
+
+            data.append("name", document.getElementById("name").value);
+            data.append(
+                "attendance",
+                document.querySelector('input[name="attendance"]:checked').value
+            );
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Submitting...";
+
+            fetch(scriptURL, {
+                method: "POST",
+                body: data
+            })
+            .then(response => response.text())
+            .then(result => {
+
+                if (result.trim() !== "Success") {
+                    throw new Error(result);
+                }
+
+                message.textContent = "Response submitted successfully!";
+                message.style.color = "green";
+                form.reset();
+
+            })
+            .catch(error => {
+
+                message.textContent = "Error: " + error.message;
+                message.style.color = "red";
+
+            })
+            .finally(() => {
+
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Submit";
+
+            });
+
+        });
+
+    </script>
+
+</body>
+</html>
